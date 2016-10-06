@@ -99,7 +99,7 @@ void draw() {
   }
   
   time_cnt++;
-  
+  println("------------------------------------------------------------------------------");
   for (int i = 0; i < cols; i++) {
     for (int j = 0; j < rows; j++) {
       // Read each candle
@@ -116,7 +116,7 @@ void draw() {
   //bsy idea
   //find max R,G,B Color
   
-  if(time_cnt >= 40)
+  if(time_cnt >= 1)
   {
     time_cnt = 0;
     MAX_R_Value = 0; MAX_R_i=0; MAX_R_j=0;
@@ -149,9 +149,9 @@ void draw() {
       }
     }
     
-    println("MAX_R_Value: " + candle_R_target[MAX_R_i][MAX_R_j] + ", i : " + MAX_R_i + ", j : " + MAX_R_j);
-    println("MAX_G_Value: " + candle_G_target[MAX_G_i][MAX_G_j] + ", i : " + MAX_G_i + ", j : " + MAX_G_j);
-    println("MAX_B_Value: " + candle_B_target[MAX_B_i][MAX_B_j] + ", i : " + MAX_B_i + ", j : " + MAX_B_j);
+    //println("MAX_R_Value: " + candle_R_target[MAX_R_i][MAX_R_j] + ", i : " + MAX_R_i + ", j : " + MAX_R_j);
+    //println("MAX_G_Value: " + candle_G_target[MAX_G_i][MAX_G_j] + ", i : " + MAX_G_i + ", j : " + MAX_G_j);
+    //println("MAX_B_Value: " + candle_B_target[MAX_B_i][MAX_B_j] + ", i : " + MAX_B_i + ", j : " + MAX_B_j);
     
     // set color 1st rule
     /*
@@ -181,6 +181,86 @@ void draw() {
     }
   }
   */
+  // set color 2nd rule
+  int R_sum = 0;
+  int G_sum = 0;
+  int B_sum = 0;
+  int nearby_cnt = 0;
+  //println("------------------------------------------------------------------------------");
+  for (int i = 0; i < cols; i++) {
+      for (int j = 0; j < rows; j++) {
+        
+       
+        R_sum = G_sum = B_sum = nearby_cnt = 0;
+        
+        int ii_value_min = 0;
+        int jj_value_min = 0;
+        int ii_value_max = 0;
+        int jj_value_max = 0;
+        
+        if(i==0) ii_value_min = 0; else ii_value_min = i-1;
+        if(j==0) jj_value_min = 0; else jj_value_min = j-1;
+        if(i==(cols-1)) ii_value_max = cols-1; else ii_value_max = i+1;
+        if(j==(rows-1)) jj_value_max = rows-1; else jj_value_max = j+1;
+        
+        //println("i : " + i + ", j : " + j);
+        //println("ii_value_min : " + ii_value_min + ", jj_value_min : " + jj_value_min);
+        //println("ii_value_max : " + ii_value_max + ", jj_value_max : " + jj_value_max);
+        
+        for(int ii = ii_value_min;ii<=ii_value_max;ii++){
+          for(int jj = jj_value_min;jj<=jj_value_max;jj++){
+            if( (ii==i) && (jj==j) )
+            {}
+            else
+            { //<>//
+              R_sum += candle_R_target[ii][jj];
+              G_sum += candle_G_target[ii][jj];
+              B_sum += candle_B_target[ii][jj];
+              nearby_cnt++;
+            }
+          }
+        }
+        
+        //println("result nearby_cnt: " + nearby_cnt + ", i : " + i + ", j : " + j);
+        
+        R_sum /= nearby_cnt;
+        G_sum /= nearby_cnt;
+        B_sum /= nearby_cnt;
+        
+        if(R_sum > candle_R_target[i][j])
+        {
+          R_Value = candle_R_target[i][j] + round((R_sum - candle_R_target[i][j])/2);
+        }
+        else
+        {
+          R_Value = candle_R_target[i][j];
+        }
+        
+        if(G_sum > candle_G_target[i][j])
+        {
+          G_Value = candle_G_target[i][j] + round((G_sum - candle_G_target[i][j])/2);
+        }
+        else
+        {
+          G_Value = candle_G_target[i][j];
+        }
+        
+        if(B_sum > candle_B_target[i][j])
+        {
+          B_Value = candle_B_target[i][j] + round((B_sum - candle_B_target[i][j])/2);
+        }
+        else
+        {
+          B_Value = candle_B_target[i][j];
+        }
+        
+        grid[i][j].Set_R(R_Value);
+        grid[i][j].Set_G(G_Value);
+        grid[i][j].Set_B(B_Value);
+        
+      }
+    }
+  }
   
   
   
@@ -205,7 +285,7 @@ void mousePressed() {
   
   //select change candle to candle
   if(lighter == 5){
-    int tempR,tempG,tempB;
+    //int tempR,tempG,tempB;
     
     for (int i = 0; i < cols; i++) {
       for (int j = 0; j < rows; j++) {
@@ -382,7 +462,7 @@ class Candle {
 
   void display() {
     stroke(255);
-    
+    /*
     if(R_color_now < R_color_target) R_color_now ++;
     else if(R_color_now > R_color_target) R_color_now--;
     
@@ -393,6 +473,8 @@ class Candle {
     else if(B_color_now > B_color_target) B_color_now--;
     
     fill(R_color_now,G_color_now,B_color_now);
+    */
+    fill(R_color_target,G_color_target,B_color_target);
     ellipse(x,y,w,h); 
   }
 }
