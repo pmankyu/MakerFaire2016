@@ -1,5 +1,6 @@
 // 2D Array of objects
-Candle[][] grid;
+Candle[][] candle;
+Candle_data[][] candle_data;
 
 // Number of columns and rows in the grid
 int cols = 6;
@@ -48,24 +49,14 @@ int time_cnt = 0;
 void setup() {
   size(1000,700);
   background(0);
-  grid = new Candle[cols][rows];
+  candle = new Candle[rows][cols];
+  candle_data = new Candle_data[rows][cols];
   
-  candle_R_now = new int[cols][rows];
-  candle_G_now = new int[cols][rows];
-  candle_B_now = new int[cols][rows];
-  
-  candle_R_target = new int[cols][rows];
-  candle_G_target = new int[cols][rows];
-  candle_B_target = new int[cols][rows];
-   
-  
-  for (int i = 0; i < cols; i++) {
-    for (int j = 0; j < rows; j++) {
+  for (int i = 0; i < rows; i++) {
+    for (int j = 0; j < cols; j++) {
       // Initialize each object
-      grid[i][j] = new Candle(i*110+100,j*110+100,100,100,0,0,0);
-      candle_R_target[i][j] = grid[i][j].Get_R();
-      candle_G_target[i][j] = grid[i][j].Get_G();
-      candle_B_target[i][j] = grid[i][j].Get_B();
+      candle[i][j] = new Candle(j*110+100,i*110+100,100,100,0,0,0);
+      candle_data[i][j] = new Candle_data();
     }
   }
   
@@ -95,262 +86,152 @@ void draw() {
   
   while(true)
   {
-    if((millis() - now_time) > 100) break;
+    if((millis() - now_time) > 30) break;
   }
   
-  //println("------------------------------------------------------------------------------");
-  for (int i = 0; i < cols; i++) {
-    for (int j = 0; j < rows; j++) {
-      // Read each candle
-      //candle_R_target[i][j] = grid[i][j].Get_R();
-      //candle_G_target[i][j] = grid[i][j].Get_G();
-      //candle_B_target[i][j] = grid[i][j].Get_B();
+  // 현재 촛불의 R,G,B 값을 읽고 R,G,B 의 변화값을 받아온다.
+  for (int i = 0; i < rows; i++) {
+    for (int j = 0; j < cols; j++) {
+      candle_data[i][j].R_color_now = candle[i][j].Get_R_now();
+      candle_data[i][j].G_color_now = candle[i][j].Get_G_now();
+      candle_data[i][j].B_color_now = candle[i][j].Get_B_now();
       
-      //print("Candle: " + i + "," + j);
-      //println(", R : " +candle_R_target[i][j] +", G : " +candle_G_target[i][j] + ", B : " +candle_B_target[i][j]);
+      candle_data[i][j].R_color_change = candle[i][j].Get_R_change();
+      candle_data[i][j].G_color_change = candle[i][j].Get_G_change();
+      candle_data[i][j].B_color_change = candle[i][j].Get_B_change();
+      
+      candle[i][j].display();
     }
   }
   
-  //calc candle target
-  //bsy idea
-  //find max R,G,B Color
-  /*
-    MAX_R_Value = 0; MAX_R_i=0; MAX_R_j=0;
-    MAX_G_Value = 0; MAX_G_i=0; MAX_G_j=0;
-    MAX_B_Value = 0; MAX_B_i=0; MAX_B_j=0;
-    
-    for (int i = 0; i < cols; i++) {
-      for (int j = 0; j < rows; j++) {
-        // Read each candle
-        if(MAX_R_Value < candle_R_target[i][j])
-        {
-          MAX_R_Value = candle_R_target[i][j];
-          MAX_R_i = i;
-          MAX_R_j = j;
-        }
-        
-        if(MAX_G_Value < candle_G_target[i][j])
-        {
-          MAX_G_Value = candle_G_target[i][j];
-          MAX_G_i = i;
-          MAX_G_j = j;
-        }
-        
-        if(MAX_B_Value < candle_B_target[i][j])
-        {
-          MAX_B_Value = candle_B_target[i][j];
-          MAX_B_i = i;
-          MAX_B_j = j;
-        }
-      }
-    }
-    
-    //println("MAX_R_Value: " + candle_R_target[MAX_R_i][MAX_R_j] + ", i : " + MAX_R_i + ", j : " + MAX_R_j);
-    //println("MAX_G_Value: " + candle_G_target[MAX_G_i][MAX_G_j] + ", i : " + MAX_G_i + ", j : " + MAX_G_j);
-    //println("MAX_B_Value: " + candle_B_target[MAX_B_i][MAX_B_j] + ", i : " + MAX_B_i + ", j : " + MAX_B_j);
-    
-    // set color 1st rule
-    /*
-    for (int i = 0; i < cols; i++) {
-      for (int j = 0; j < rows; j++) {
-        if(candle_R_target[i][j] < MAX_R_Value)
-        {
-          R_Value = candle_R_target[i][j] + MAX_R_Value/(  (abs(MAX_R_i-i)+abs(MAX_R_j-j))*2  );
-          if(R_Value >= MAX_R_Value) R_Value = MAX_R_Value;
-          grid[i][j].Set_R(R_Value);
-        }
-        
-        if(candle_G_target[i][j] < MAX_G_Value)
-        {
-          G_Value = candle_G_target[i][j] + MAX_G_Value/(  (abs(MAX_G_i-i)+abs(MAX_G_j-j))*2  );
-          if(G_Value >= MAX_G_Value) G_Value = MAX_G_Value;
-          grid[i][j].Set_G(G_Value);
-        }
-        
-        if(candle_B_target[i][j] < MAX_B_Value)
-        {
-          B_Value = candle_B_target[i][j] + MAX_B_Value/(  (abs(MAX_B_i-i)+abs(MAX_B_j-j))*2  );
-          if(B_Value >= MAX_B_Value) B_Value = MAX_B_Value;
-          grid[i][j].Set_B(B_Value);
-        }
-      }
-    }
-  }
-  */
-  // set color 2nd rule
-  int R_sum = 0;
-  int G_sum = 0;
-  int B_sum = 0;
-  int nearby_cnt = 0;
-  //println("------------------------------------------------------------------------------");
-  for (int i = 0; i < cols; i++) {
-      for (int j = 0; j < rows; j++) {
-        
-        now_time = millis();
-  
-        while(true)
-        {
-          if((millis() - now_time) > 10) break;
-        }
-        
-        
-        println("------------------------------------------------------------------------------");
-        for (int a = 0; a < cols; a++) {
-          for (int b = 0; b < rows; b++) {
-        
-            candle_R_target[a][b] = grid[a][b].Get_R();
-            candle_G_target[a][b] = grid[a][b].Get_G();
-            candle_B_target[a][b] = grid[a][b].Get_B();
-            print("Candle: " + a + "," + b);
-            println(", R : " +candle_R_target[a][b] +", G : " +candle_G_target[a][b] + ", B : " +candle_B_target[a][b] + ", ceil(0.001) : " +ceil(0.001));
+  // 변화값을 기준으로 전체 초의 변화값을 계산한다.
+  for (int i = 0; i < rows; i++) {
+    for (int j = 0; j < cols; j++) {
+      
+      
+      // 변화값이 존재하는지 확인
+      if(candle_data[i][j].R_color_change != 0)
+      {
+        //print_candle_now();
+        //print_candle_change();
+        int change_value = 0;
+        //println("R-----------------------------------------------------------");
+        for (int ii = 0; ii < rows; ii++) {
+          for (int jj = 0; jj < cols; jj++) {
+            change_value = candle_data[i][j].R_color_change - ceil((candle_data[i][j].R_color_change * (abs(ii-i) + abs(jj-j)))/10);
+            //print("(" + change_value+ "), ");
+            candle_data[ii][jj].R_color_target = candle_data[ii][jj].R_color_now + change_value;
+            
+            if(candle_data[ii][jj].R_color_target > 255) candle_data[ii][jj].R_color_target = 255;
+            else if(candle_data[ii][jj].R_color_target < 0) candle_data[ii][jj].R_color_target = 0;
           }
+          //println(" ");
         }
+        //print_candle_target();
+      }
+      
+      if(candle_data[i][j].G_color_change != 0)
+      {
+        //print_candle_now();
+        //print_candle_change();
+        int change_value = 0;
+        //println("G-----------------------------------------------------------");
+        for (int ii = 0; ii < rows; ii++) {
+          for (int jj = 0; jj < cols; jj++) {
+            change_value = candle_data[i][j].G_color_change - ceil((candle_data[i][j].G_color_change * (abs(ii-i) + abs(jj-j)))/10);
+            //print("(" + change_value+ "), ");
+            candle_data[ii][jj].G_color_target = candle_data[ii][jj].G_color_now + change_value;
+            
+            if(candle_data[ii][jj].G_color_target > 255) candle_data[ii][jj].G_color_target = 255;
+            else if(candle_data[ii][jj].G_color_target < 0) candle_data[ii][jj].G_color_target = 0;
+          }
+          //println(" ");
+        }
+        //print_candle_target();
+      }
+      
+      if(candle_data[i][j].B_color_change != 0)
+      {
+        //print_candle_now();
+        //print_candle_change();
+        int change_value = 0;
+        //println("B-----------------------------------------------------------");
+        for (int ii = 0; ii < rows; ii++) {
+          for (int jj = 0; jj < cols; jj++) {
+            change_value = candle_data[i][j].B_color_change - ceil((candle_data[i][j].B_color_change * (abs(ii-i) + abs(jj-j)))/10);
+            //print("(" + change_value+ "), ");
+            candle_data[ii][jj].B_color_target = candle_data[ii][jj].B_color_now + change_value;
+            
+            if(candle_data[ii][jj].B_color_target > 255) candle_data[ii][jj].B_color_target = 255;
+            else if(candle_data[ii][jj].B_color_target < 0) candle_data[ii][jj].B_color_target = 0;
+          }
+          //println(" ");
+        }
+        //print_candle_target();
+      }
+    }
+  }
+  
+  // 계산된 변화값과 현재값의 차이만큼 초의 값을 세팅한다.
+  for (int i = 0; i < rows; i++) {
+    for (int j = 0; j < cols; j++) {
 
-        R_sum = G_sum = B_sum = nearby_cnt = 0;
-        
-        // 색을 세팅하려는 초와 가장 가까운 초들의 색의 평균을 계산한다.
-        for (int ii = i-1; ii <= i+1; ii++) {
-          if(ii<0) continue;
-          if(ii>=cols) continue;
-          
-          for (int jj = j-1; jj <= j+1; jj++) {
-            if(jj<0) continue;
-            if(jj>=rows) continue;
-            
-            //if( (ii==i) && (jj==j) ) continue;
-            
-            R_sum += candle_R_target[ii][jj];
-            G_sum += candle_G_target[ii][jj];
-            B_sum += candle_B_target[ii][jj];
-            nearby_cnt++;
-          }
-        }
-        
-        R_sum /= nearby_cnt;
-        G_sum /= nearby_cnt;
-        B_sum /= nearby_cnt;
-        
-        //R_Value = candle_R_target[i][j] + ceil((R_sum - candle_R_target[i][j])/3);
-        //G_Value = candle_G_target[i][j] + ceil((G_sum - candle_G_target[i][j])/2);
-        //B_Value = candle_B_target[i][j] + ceil((B_sum - candle_B_target[i][j])/2);
-        
-        
-        
-        //candle_R_target[i][j] += ceil((R_sum - candle_R_target[i][j])/5);
-        //candle_G_target[i][j] += ceil((G_sum - candle_G_target[i][j])/5);
-        //candle_B_target[i][j] += ceil((B_sum - candle_B_target[i][j])/5);
-        
-        candle_R_target[i][j] = calc_color(R_sum,candle_R_target[i][j]);
-        candle_G_target[i][j] = calc_color(G_sum,candle_G_target[i][j]);
-        candle_B_target[i][j] = calc_color(B_sum,candle_B_target[i][j]);
-        
-        grid[i][j].Set_R(candle_R_target[i][j]);
-        grid[i][j].Set_G(candle_G_target[i][j]);
-        grid[i][j].Set_B(candle_B_target[i][j]);
-        grid[i][j].display();
-        
-        // 계산된 평균을 가지고 초의 색을 세팅
-        for (int ii = i-1; ii <= i+1; ii++) {
-          if(ii<0) continue;
-          if(ii>=cols) continue;
-          
-          for (int jj = j-1; jj <= j+1; jj++) {
-            if(jj<0) continue;
-            if(jj>=rows) continue;
-            
-            if( (ii==i) && (jj==j) ) continue;
-            
-            //candle_R_target[ii][jj] += round(R_sum - candle_R_target[ii][jj]);
-            //candle_G_target[ii][jj] += round(G_sum - candle_G_target[ii][jj]);
-            //candle_B_target[ii][jj] += round(B_sum - candle_B_target[ii][jj]);
-            
-            candle_R_target[ii][jj] = calc_color(R_sum,candle_R_target[ii][jj]);
-            candle_G_target[ii][jj] = calc_color(G_sum,candle_G_target[ii][jj]);
-            candle_B_target[ii][jj] = calc_color(B_sum,candle_B_target[ii][jj]);
-            
-            grid[ii][jj].Set_R(candle_R_target[ii][jj]);
-            grid[ii][jj].Set_G(candle_G_target[ii][jj]);
-            grid[ii][jj].Set_B(candle_B_target[ii][jj]);
-            grid[ii][jj].display();
-            
-          }
-        }
-        
-        /*
-        int ii_value_min = 0;
-        int jj_value_min = 0;
-        int ii_value_max = 0;
-        int jj_value_max = 0;
-        
-        if(i==0) ii_value_min = 0; else ii_value_min = i-1;
-        if(j==0) jj_value_min = 0; else jj_value_min = j-1;
-        if(i==(cols-1)) ii_value_max = cols-1; else ii_value_max = i+1;
-        if(j==(rows-1)) jj_value_max = rows-1; else jj_value_max = j+1;
-        
-        //println("i : " + i + ", j : " + j);
-        //println("ii_value_min : " + ii_value_min + ", jj_value_min : " + jj_value_min);
-        //println("ii_value_max : " + ii_value_max + ", jj_value_max : " + jj_value_max);
-        
-        for(int ii = ii_value_min;ii<=ii_value_max;ii++){
-          for(int jj = jj_value_min;jj<=jj_value_max;jj++){
-            if( (ii==i) && (jj==j) )
-            {}
-            else
-            { //<>//
-              R_sum += candle_R_target[ii][jj];
-              G_sum += candle_G_target[ii][jj];
-              B_sum += candle_B_target[ii][jj];
-              nearby_cnt++;
-            }
-          }
-        }
-        */        
-        
-        //println("result nearby_cnt: " + nearby_cnt + ", i : " + i + ", j : " + j+ ", R_sum : " + R_sum+ ", G_sum : " + G_sum+ ", B_sum : " + B_sum);
-        
-        /*
-        if(R_sum > candle_R_target[i][j])
-        {
-          R_Value = candle_R_target[i][j] + round((R_sum - candle_R_target[i][j])/2);
-        }
-        else
-        {
-          R_Value = candle_R_target[i][j];
-        }
-        
-        if(G_sum > candle_G_target[i][j])
-        {
-          G_Value = candle_G_target[i][j] + round((G_sum - candle_G_target[i][j])/2);
-        }
-        else
-        {
-          G_Value = candle_G_target[i][j];
-        }
-        
-        if(B_sum > candle_B_target[i][j])
-        {
-          B_Value = candle_B_target[i][j] + round((B_sum - candle_B_target[i][j])/2);
-        }
-        else
-        {
-          B_Value = candle_B_target[i][j];
-        }
-        */
-      }
+      candle[i][j].Set_R(candle_data[i][j].R_color_now + calc_color_value(candle_data[i][j].R_color_target,candle_data[i][j].R_color_now));
+      candle[i][j].Set_G(candle_data[i][j].G_color_now + calc_color_value(candle_data[i][j].G_color_target,candle_data[i][j].G_color_now));
+      candle[i][j].Set_B(candle_data[i][j].B_color_now + calc_color_value(candle_data[i][j].B_color_target,candle_data[i][j].B_color_now));
     }
+  }
   
+  //print_candle_change();
+  print_candle_now();
+  //print_candle_target(); //<>//
+}
+
+int calc_color_value(int target, int now)
+{
+  int result = 0;
   
+  result = (target - now)/5;
   
+  if(result == 0)
+  {
+    if(target > now) result = 1;
+    else if(target < now) result = -1;
+  }
   
-  // The counter variables i and j are also the column and row numbers and 
-  // are used as arguments to the constructor for each object in the grid.  
-  for (int i = 0; i < cols; i++) {
-    for (int j = 0; j < rows; j++) {
-      // Oscillate and display each object
-      // real set : send once
-      // test processing : send every 10ms
-      //grid[i][j].display();
+  return result;
+}
+
+void print_candle_now()
+{
+  println("Now-------------------------------------------------------");
+  for (int i = 0; i < rows; i++) {
+    for (int j = 0; j < cols; j++) {
+      print("(" + candle_data[i][j].R_color_now + ", " + candle_data[i][j].G_color_now + ", " + candle_data[i][j].B_color_now+ "), ");
     }
+    println(" ");
+  }
+}
+
+void print_candle_change()
+{
+  println("Change------------------------------------------------------");
+  for (int i = 0; i < rows; i++) {
+    for (int j = 0; j < cols; j++) {
+      print("(" + candle_data[i][j].R_color_change + ", " + candle_data[i][j].G_color_change + ", " + candle_data[i][j].B_color_change+ "), ");
+    }
+    println(" ");
+  }
+}
+
+void print_candle_target()
+{
+  println("Target--------------------------------------------------------");
+  for (int i = 0; i < rows; i++) {
+    for (int j = 0; j < cols; j++) {
+      print("(" + candle_data[i][j].R_color_target + ", " + candle_data[i][j].G_color_target + ", " + candle_data[i][j].B_color_target+ "), ");
+    }
+    println(" ");
   }
 }
 
@@ -358,8 +239,9 @@ int calc_color(int near_color, int color_value)
 {
   int result=0;
   
-  if(color_value > near_color) result = color_value - ceil((color_value - near_color)/10);
-  else if(color_value < near_color) result = color_value + (near_color - color_value);
+  if(color_value > near_color) result = color_value - ceil((color_value - near_color)/30);
+  else if(color_value < near_color) result = color_value + round((near_color - color_value)/3);
+  else result = color_value;
   
   return result;
 }
@@ -374,11 +256,11 @@ void mousePressed() {
   if(lighter == 5){
     //int tempR,tempG,tempB;
     
-    for (int i = 0; i < cols; i++) {
-      for (int j = 0; j < rows; j++) {
-        if( ((grid[i][j].x - grid[i][j].w/2) < x) && ((grid[i][j].x + grid[i][j].w/2) > x))
+    for (int i = 0; i < rows; i++) {
+      for (int j = 0; j < cols; j++) {
+        if( ((candle[i][j].x - candle[i][j].w/2) < x) && ((candle[i][j].x + candle[i][j].w/2) > x))
         {
-          if( ((grid[i][j].y - grid[i][j].h/2) < y) && ((grid[i][j].y + grid[i][j].h/2) > y))
+          if( ((candle[i][j].y - candle[i][j].h/2) < y) && ((candle[i][j].y + candle[i][j].h/2) > y))
           {
             if( (Seleted_candle_i == -1)&&(Seleted_candle_j == -1))
             {
@@ -418,16 +300,16 @@ void mouseReleased() {
   int time = millis() - mouse_time;
   int plus_value = 50;//time/10;
   
-  for (int i = 0; i < cols; i++) {
-    for (int j = 0; j < rows; j++) {
-      if( ((grid[i][j].x - grid[i][j].w/2) < x) && ((grid[i][j].x + grid[i][j].w/2) > x))
+  for (int i = 0; i < rows; i++) {
+    for (int j = 0; j < cols; j++) {
+      if( ((candle[i][j].x - candle[i][j].w/2) < x) && ((candle[i][j].x + candle[i][j].w/2) > x))
       {
-        if( ((grid[i][j].y - grid[i][j].h/2) < y) && ((grid[i][j].y + grid[i][j].h/2) > y))
+        if( ((candle[i][j].y - candle[i][j].h/2) < y) && ((candle[i][j].y + candle[i][j].h/2) > y))
         {
-          print("Candle: " + i + "," + j);
-          println(", lighter : " +lighter +", mouse time(ms): " + time );
+          //print("Candle: " + i + "," + j);
+          //println(", lighter : " +lighter +", mouse time(ms): " + time );
           
-          grid[i][j].change_color(lighter,plus_value);
+          candle[i][j].change_color(lighter,plus_value);
           
           //if(grid[i][j].change_color(lighter,plus_value))  change_color_nearby(i,j,plus_value);
         }
@@ -436,13 +318,6 @@ void mouseReleased() {
   }
 }
 
-void change_color_nearby(int candle_i,int candle_j, int value){
-  for (int i = 0; i < cols; i++) {
-    for (int j = 0; j < rows; j++) {
-      grid[i][j].change_color(lighter,value/( (  abs(candle_i-i)+abs(candle_j-j)+1 )));
-    }
-  }
-}
 
 void check_lighter(int x,int y){
   if( (lighterX < x) && ((lighterX + lighterSize) > x)) {
@@ -469,7 +344,34 @@ void check_lighter(int x,int y){
   }
 }
 
-// A Cell object
+class Candle_data {
+  int R_color_now;
+  int G_color_now;
+  int B_color_now;
+  
+  int R_color_change;
+  int G_color_change;
+  int B_color_change;
+  
+  int R_color_target;
+  int G_color_target;
+  int B_color_target;
+  
+  Candle_data() {
+    R_color_now = 0;
+    G_color_now = 0;
+    B_color_now = 0;
+    
+    R_color_change = 0;
+    G_color_change = 0;
+    B_color_change = 0;
+    
+    R_color_target = 0;
+    G_color_target = 0;
+    B_color_target = 0;
+  } 
+}
+
 class Candle {
   // A cell object knows about its location in the grid 
   // as well as its size with the variables x,y,w,h
@@ -478,9 +380,9 @@ class Candle {
   int R_color_now;
   int G_color_now;
   int B_color_now;
-  int R_color_target;
-  int G_color_target;
-  int B_color_target;
+  int R_color_change;
+  int G_color_change;
+  int B_color_change;
 
   // Cell Constructor
   Candle(float tempX, float tempY, float tempW, float tempH, int tempR, int tempG, int tempB) {
@@ -488,9 +390,9 @@ class Candle {
     y = tempY;
     w = tempW;
     h = tempH;
-    R_color_target = tempR;
-    G_color_target = tempG;
-    B_color_target = tempB;
+    R_color_change = tempR;
+    G_color_change = tempG;
+    B_color_change = tempB;
     R_color_now = 0;
     G_color_now = 0;
     B_color_now = 0;
@@ -499,53 +401,95 @@ class Candle {
   boolean  change_color(int mode,int value){
     switch(mode){
       case 1:
+        R_color_change += value;
+        /*
         if(R_color_target <= 255) {
           R_color_target += value;
           if(R_color_target >= 255) R_color_target = 255;
           return true;
         }
+        */
       break;
       
       case 2:
+        G_color_change += value;
+        /*
         if(G_color_target <= 255) {
           G_color_target += value;
           if(G_color_target >= 255) G_color_target = 255;
           return true;
         }
+        */
       break;
       
       case 3:
+        B_color_change += value;
+        /*
         if(B_color_target <= 255) {
           B_color_target += value;
           if(B_color_target >= 255) B_color_target = 255;
           return true;
         }
+        */
       break;
       
       case 4:
-        R_color_target = 0;
-        G_color_target = 0;
-        B_color_target = 0;
-        R_color_now = 0;
-        G_color_now = 0;
-        B_color_now = 0;
+        R_color_change = -1 * R_color_now;
+        G_color_change = -1 * G_color_now;
+        B_color_change = -1 * B_color_now;
       break;
       
       default:
       break;
     }
-    
+
     return false;
   }
   
-  int Get_R(){return R_color_target;}
-  void Set_R(int value){R_color_target = value;}
+  int Get_R_now(){return R_color_now;}
+  void Set_R(int value)
+  {
+    if(value > 255) R_color_now = 255;
+    else if(value < 0) R_color_now = 0;
+    else R_color_now = value;
+  }
   
-  int Get_G(){return G_color_target;}
-  void Set_G(int value){G_color_target = value;}
+  int Get_G_now(){return G_color_now;}
+  void Set_G(int value)
+  {
+    if(value > 255) G_color_now = 255;
+    else if(value < 0) G_color_now = 0;
+    else G_color_now = value;
+  }
   
-  int Get_B(){return B_color_target;}
-  void Set_B(int value){B_color_target = value;}
+  int Get_B_now(){return B_color_now;}
+  void Set_B(int value)
+  {
+    if(value > 255) B_color_now = 255;
+    else if(value < 0) B_color_now = 0;
+    else B_color_now = value;
+  }
+  
+  int Get_R_change()
+  {
+    int return_value = R_color_change;
+    R_color_change = 0;
+    return return_value;
+  }
+  
+  int Get_G_change()
+  {
+    int return_value = G_color_change;
+    G_color_change = 0;
+    return return_value;
+  }
+  
+  int Get_B_change()
+  {
+    int return_value = B_color_change;
+    B_color_change = 0;
+    return return_value;
+  }
 
   void display() {
     stroke(255);
@@ -561,7 +505,7 @@ class Candle {
     
     fill(R_color_now,G_color_now,B_color_now);
     */
-    fill(R_color_target,G_color_target,B_color_target);
+    fill(R_color_now,G_color_now,B_color_now);
     ellipse(x,y,w,h); 
   }
 }
