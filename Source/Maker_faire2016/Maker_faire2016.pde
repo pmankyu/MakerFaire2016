@@ -95,30 +95,26 @@ void draw() {
   
   while(true)
   {
-    if((millis() - now_time) > 10) break;
+    if((millis() - now_time) > 100) break;
   }
   
-  time_cnt++;
-  println("------------------------------------------------------------------------------");
+  //println("------------------------------------------------------------------------------");
   for (int i = 0; i < cols; i++) {
     for (int j = 0; j < rows; j++) {
       // Read each candle
-      candle_R_target[i][j] = grid[i][j].Get_R();
-      candle_G_target[i][j] = grid[i][j].Get_G();
-      candle_B_target[i][j] = grid[i][j].Get_B();
+      //candle_R_target[i][j] = grid[i][j].Get_R();
+      //candle_G_target[i][j] = grid[i][j].Get_G();
+      //candle_B_target[i][j] = grid[i][j].Get_B();
       
-      print("Candle: " + i + "," + j);
-      println(", R : " +candle_R_target[i][j] +", G : " +candle_G_target[i][j] + ", B : " +candle_B_target[i][j]);
+      //print("Candle: " + i + "," + j);
+      //println(", R : " +candle_R_target[i][j] +", G : " +candle_G_target[i][j] + ", B : " +candle_B_target[i][j]);
     }
   }
   
   //calc candle target
   //bsy idea
   //find max R,G,B Color
-  
-  if(time_cnt >= 1)
-  {
-    time_cnt = 0;
+  /*
     MAX_R_Value = 0; MAX_R_i=0; MAX_R_j=0;
     MAX_G_Value = 0; MAX_G_i=0; MAX_G_j=0;
     MAX_B_Value = 0; MAX_B_i=0; MAX_B_j=0;
@@ -190,9 +186,97 @@ void draw() {
   for (int i = 0; i < cols; i++) {
       for (int j = 0; j < rows; j++) {
         
-       
+        now_time = millis();
+  
+        while(true)
+        {
+          if((millis() - now_time) > 10) break;
+        }
+        
+        
+        println("------------------------------------------------------------------------------");
+        for (int a = 0; a < cols; a++) {
+          for (int b = 0; b < rows; b++) {
+        
+            candle_R_target[a][b] = grid[a][b].Get_R();
+            candle_G_target[a][b] = grid[a][b].Get_G();
+            candle_B_target[a][b] = grid[a][b].Get_B();
+            print("Candle: " + a + "," + b);
+            println(", R : " +candle_R_target[a][b] +", G : " +candle_G_target[a][b] + ", B : " +candle_B_target[a][b] + ", ceil(0.001) : " +ceil(0.001));
+          }
+        }
+
         R_sum = G_sum = B_sum = nearby_cnt = 0;
         
+        // 색을 세팅하려는 초와 가장 가까운 초들의 색의 평균을 계산한다.
+        for (int ii = i-1; ii <= i+1; ii++) {
+          if(ii<0) continue;
+          if(ii>=cols) continue;
+          
+          for (int jj = j-1; jj <= j+1; jj++) {
+            if(jj<0) continue;
+            if(jj>=rows) continue;
+            
+            //if( (ii==i) && (jj==j) ) continue;
+            
+            R_sum += candle_R_target[ii][jj];
+            G_sum += candle_G_target[ii][jj];
+            B_sum += candle_B_target[ii][jj];
+            nearby_cnt++;
+          }
+        }
+        
+        R_sum /= nearby_cnt;
+        G_sum /= nearby_cnt;
+        B_sum /= nearby_cnt;
+        
+        //R_Value = candle_R_target[i][j] + ceil((R_sum - candle_R_target[i][j])/3);
+        //G_Value = candle_G_target[i][j] + ceil((G_sum - candle_G_target[i][j])/2);
+        //B_Value = candle_B_target[i][j] + ceil((B_sum - candle_B_target[i][j])/2);
+        
+        
+        
+        //candle_R_target[i][j] += ceil((R_sum - candle_R_target[i][j])/5);
+        //candle_G_target[i][j] += ceil((G_sum - candle_G_target[i][j])/5);
+        //candle_B_target[i][j] += ceil((B_sum - candle_B_target[i][j])/5);
+        
+        candle_R_target[i][j] = calc_color(R_sum,candle_R_target[i][j]);
+        candle_G_target[i][j] = calc_color(G_sum,candle_G_target[i][j]);
+        candle_B_target[i][j] = calc_color(B_sum,candle_B_target[i][j]);
+        
+        grid[i][j].Set_R(candle_R_target[i][j]);
+        grid[i][j].Set_G(candle_G_target[i][j]);
+        grid[i][j].Set_B(candle_B_target[i][j]);
+        grid[i][j].display();
+        
+        // 계산된 평균을 가지고 초의 색을 세팅
+        for (int ii = i-1; ii <= i+1; ii++) {
+          if(ii<0) continue;
+          if(ii>=cols) continue;
+          
+          for (int jj = j-1; jj <= j+1; jj++) {
+            if(jj<0) continue;
+            if(jj>=rows) continue;
+            
+            if( (ii==i) && (jj==j) ) continue;
+            
+            //candle_R_target[ii][jj] += round(R_sum - candle_R_target[ii][jj]);
+            //candle_G_target[ii][jj] += round(G_sum - candle_G_target[ii][jj]);
+            //candle_B_target[ii][jj] += round(B_sum - candle_B_target[ii][jj]);
+            
+            candle_R_target[ii][jj] = calc_color(R_sum,candle_R_target[ii][jj]);
+            candle_G_target[ii][jj] = calc_color(G_sum,candle_G_target[ii][jj]);
+            candle_B_target[ii][jj] = calc_color(B_sum,candle_B_target[ii][jj]);
+            
+            grid[ii][jj].Set_R(candle_R_target[ii][jj]);
+            grid[ii][jj].Set_G(candle_G_target[ii][jj]);
+            grid[ii][jj].Set_B(candle_B_target[ii][jj]);
+            grid[ii][jj].display();
+            
+          }
+        }
+        
+        /*
         int ii_value_min = 0;
         int jj_value_min = 0;
         int ii_value_max = 0;
@@ -220,13 +304,11 @@ void draw() {
             }
           }
         }
+        */        
         
-        //println("result nearby_cnt: " + nearby_cnt + ", i : " + i + ", j : " + j);
+        //println("result nearby_cnt: " + nearby_cnt + ", i : " + i + ", j : " + j+ ", R_sum : " + R_sum+ ", G_sum : " + G_sum+ ", B_sum : " + B_sum);
         
-        R_sum /= nearby_cnt;
-        G_sum /= nearby_cnt;
-        B_sum /= nearby_cnt;
-        
+        /*
         if(R_sum > candle_R_target[i][j])
         {
           R_Value = candle_R_target[i][j] + round((R_sum - candle_R_target[i][j])/2);
@@ -253,14 +335,9 @@ void draw() {
         {
           B_Value = candle_B_target[i][j];
         }
-        
-        grid[i][j].Set_R(R_Value);
-        grid[i][j].Set_G(G_Value);
-        grid[i][j].Set_B(B_Value);
-        
+        */
       }
     }
-  }
   
   
   
@@ -272,9 +349,19 @@ void draw() {
       // Oscillate and display each object
       // real set : send once
       // test processing : send every 10ms
-      grid[i][j].display();
+      //grid[i][j].display();
     }
   }
+}
+
+int calc_color(int near_color, int color_value)
+{
+  int result=0;
+  
+  if(color_value > near_color) result = color_value - ceil((color_value - near_color)/10);
+  else if(color_value < near_color) result = color_value + (near_color - color_value);
+  
+  return result;
 }
 
 void mousePressed() {
