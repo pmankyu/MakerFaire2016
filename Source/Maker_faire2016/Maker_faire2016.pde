@@ -8,7 +8,7 @@ int rows = 5;
 
 int mouse_time = 0;
 
-int lighterX = 800;
+int lighterX = 950;
 int lighterSize = 100;
 int R_lighterY = 100;
 int G_lighterY = 200;
@@ -21,13 +21,26 @@ int lighter = 0;
 int Seleted_candle_i = -1;
 int Seleted_candle_j = -1;
 
-int[][] candle_R_now;
-int[][] candle_G_now;
-int[][] candle_B_now;
+//int[][] candle_R_now;
+//int[][] candle_G_now;
+//int[][] candle_B_now;
 
-int[][] candle_R_target;
-int[][] candle_G_target;
-int[][] candle_B_target;
+//int[][] candle_R_target;
+//int[][] candle_G_target;
+//int[][] candle_B_target;
+
+int[][] candle_X_pos = {  {75,150,225,300,150,225},
+                          {300,375,450,225,300,375},
+                          {450,525,600,300,375,450},
+                          {525,600,675,450,525,600},
+                          {675,750,600,675,750,825} 
+                        };
+                        
+int[][] candle_Y_pos = {  {300,225,150,75,375,300},
+                          {225,150,75,450,375,300},
+                          {225,150,75,525,450,375},
+                          {300,225,150,525,450,375},
+                          {300,225,525,450,375,300} };
 
 int MAX_R_Value = 0;
 int MAX_R_i=0;
@@ -47,7 +60,7 @@ int B_Value = 0;
 int time_cnt = 0;
 
 void setup() {
-  size(1000,700);
+  size(1100,600);
   background(0);
   candle = new Candle[rows][cols];
   candle_data = new Candle_data[rows][cols];
@@ -55,7 +68,7 @@ void setup() {
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
       // Initialize each object
-      candle[i][j] = new Candle(j*110+100,i*110+100,100,100,0,0,0);
+      candle[i][j] = new Candle(candle_X_pos[i][j],candle_Y_pos[i][j],100,100,0,0,0);
       candle_data[i][j] = new Candle_data();
     }
   }
@@ -118,14 +131,15 @@ void draw() {
         //println("R-----------------------------------------------------------");
         for (int ii = 0; ii < rows; ii++) {
           for (int jj = 0; jj < cols; jj++) {
-            change_value = candle_data[i][j].R_color_change - ceil((candle_data[i][j].R_color_change * (abs(ii-i) + abs(jj-j)))/10);
+            change_value = candle_data[i][j].R_color_change - ceil(    (candle_data[i][j].R_color_change * calc_distance(i,j,ii,jj))/7     );
             //print("(" + change_value+ "), ");
+            //print("(" + calc_distance(i,j,ii,jj)+ "), ");
             candle_data[ii][jj].R_color_target = candle_data[ii][jj].R_color_now + change_value;
             
             if(candle_data[ii][jj].R_color_target > 255) candle_data[ii][jj].R_color_target = 255;
             else if(candle_data[ii][jj].R_color_target < 0) candle_data[ii][jj].R_color_target = 0;
           }
-          //println(" ");
+          println(" ");
         }
         //print_candle_target();
       }
@@ -138,7 +152,7 @@ void draw() {
         //println("G-----------------------------------------------------------");
         for (int ii = 0; ii < rows; ii++) {
           for (int jj = 0; jj < cols; jj++) {
-            change_value = candle_data[i][j].G_color_change - ceil((candle_data[i][j].G_color_change * (abs(ii-i) + abs(jj-j)))/10);
+            change_value = candle_data[i][j].G_color_change - ceil(    (candle_data[i][j].G_color_change * calc_distance(i,j,ii,jj))/7     );
             //print("(" + change_value+ "), ");
             candle_data[ii][jj].G_color_target = candle_data[ii][jj].G_color_now + change_value;
             
@@ -158,7 +172,7 @@ void draw() {
         //println("B-----------------------------------------------------------");
         for (int ii = 0; ii < rows; ii++) {
           for (int jj = 0; jj < cols; jj++) {
-            change_value = candle_data[i][j].B_color_change - ceil((candle_data[i][j].B_color_change * (abs(ii-i) + abs(jj-j)))/10);
+            change_value = candle_data[i][j].B_color_change - ceil(    (candle_data[i][j].B_color_change * calc_distance(i,j,ii,jj))/7     );
             //print("(" + change_value+ "), ");
             candle_data[ii][jj].B_color_target = candle_data[ii][jj].B_color_now + change_value;
             
@@ -185,6 +199,25 @@ void draw() {
   //print_candle_change();
   print_candle_now();
   //print_candle_target(); //<>//
+}
+
+int calc_distance(int start_x, int start_y, int end_x, int end_y)
+{
+  int result = 0;
+  
+  result = (abs(candle_X_pos[start_x][start_y] - candle_X_pos[end_x][end_y]) + abs(candle_Y_pos[start_x][start_y] - candle_Y_pos[end_x][end_y]))/150;
+  
+  //println("start_x : " + start_x +", start_y : " + start_y +", end_x : " + end_x +", end_y : " + end_y);
+  //println("start_x : " + candle_X_pos[start_x][start_y] +", start_y : " + candle_Y_pos[start_x][start_y] +", end_x : " + candle_X_pos[end_x][end_y] +", end_y : " + candle_Y_pos[end_x][end_y]);
+  //println("result : " + result);
+  
+  
+  
+  //while(result != 0){};
+  
+  
+  
+  return result;
 }
 
 int calc_color_value(int target, int now)
@@ -357,6 +390,9 @@ class Candle_data {
   int G_color_target;
   int B_color_target;
   
+  int x_pos;
+  int y_pos;
+  
   Candle_data() {
     R_color_now = 0;
     G_color_now = 0;
@@ -369,6 +405,8 @@ class Candle_data {
     R_color_target = 0;
     G_color_target = 0;
     B_color_target = 0;
+    x_pos = 0;
+    y_pos = 0;
   } 
 }
 
