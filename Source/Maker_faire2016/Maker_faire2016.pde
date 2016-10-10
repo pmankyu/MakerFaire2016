@@ -1,3 +1,7 @@
+import processing.serial.*;
+
+int candle_index = 1;
+
 // 2D Array of objects
 Candle[][] candle;
 Candle_data[][] candle_data;
@@ -62,6 +66,7 @@ int time_cnt = 0;
 void setup() {
   size(1100,600);
   background(0);
+
   candle = new Candle[rows][cols];
   candle_data = new Candle_data[rows][cols];
   
@@ -131,7 +136,7 @@ void draw() {
         //println("R-----------------------------------------------------------");
         for (int ii = 0; ii < rows; ii++) {
           for (int jj = 0; jj < cols; jj++) {
-            change_value = candle_data[i][j].R_color_change - ceil(    (candle_data[i][j].R_color_change * calc_distance(i,j,ii,jj))/7     );
+            change_value = candle_data[i][j].R_color_change - ceil(    (candle_data[i][j].R_color_change * calc_distance(i,j,ii,jj))/6     );
             //print("(" + change_value+ "), ");
             //print("(" + calc_distance(i,j,ii,jj)+ "), ");
             candle_data[ii][jj].R_color_target = candle_data[ii][jj].R_color_now + change_value;
@@ -152,7 +157,7 @@ void draw() {
         //println("G-----------------------------------------------------------");
         for (int ii = 0; ii < rows; ii++) {
           for (int jj = 0; jj < cols; jj++) {
-            change_value = candle_data[i][j].G_color_change - ceil(    (candle_data[i][j].G_color_change * calc_distance(i,j,ii,jj))/7     );
+            change_value = candle_data[i][j].G_color_change - ceil(    (candle_data[i][j].G_color_change * calc_distance(i,j,ii,jj))/6     );
             //print("(" + change_value+ "), ");
             candle_data[ii][jj].G_color_target = candle_data[ii][jj].G_color_now + change_value;
             
@@ -172,7 +177,7 @@ void draw() {
         //println("B-----------------------------------------------------------");
         for (int ii = 0; ii < rows; ii++) {
           for (int jj = 0; jj < cols; jj++) {
-            change_value = candle_data[i][j].B_color_change - ceil(    (candle_data[i][j].B_color_change * calc_distance(i,j,ii,jj))/7     );
+            change_value = candle_data[i][j].B_color_change - ceil(    (candle_data[i][j].B_color_change * calc_distance(i,j,ii,jj))/6     );
             //print("(" + change_value+ "), ");
             candle_data[ii][jj].B_color_target = candle_data[ii][jj].B_color_now + change_value;
             
@@ -189,7 +194,6 @@ void draw() {
   // 계산된 변화값과 현재값의 차이만큼 초의 값을 세팅한다.
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
-
       candle[i][j].Set_R(candle_data[i][j].R_color_now + calc_color_value(candle_data[i][j].R_color_target,candle_data[i][j].R_color_now));
       candle[i][j].Set_G(candle_data[i][j].G_color_now + calc_color_value(candle_data[i][j].G_color_target,candle_data[i][j].G_color_now));
       candle[i][j].Set_B(candle_data[i][j].B_color_now + calc_color_value(candle_data[i][j].B_color_target,candle_data[i][j].B_color_now));
@@ -211,11 +215,7 @@ int calc_distance(int start_x, int start_y, int end_x, int end_y)
   //println("start_x : " + candle_X_pos[start_x][start_y] +", start_y : " + candle_Y_pos[start_x][start_y] +", end_x : " + candle_X_pos[end_x][end_y] +", end_y : " + candle_Y_pos[end_x][end_y]);
   //println("result : " + result);
   
-  
-  
   //while(result != 0){};
-  
-  
   
   return result;
 }
@@ -223,9 +223,9 @@ int calc_distance(int start_x, int start_y, int end_x, int end_y)
 int calc_color_value(int target, int now)
 {
   int result = 0;
-  
-  result = (target - now)/5;
-  
+
+  result = (target - now)/30;
+
   if(result == 0)
   {
     if(target > now) result = 1;
