@@ -61,6 +61,9 @@ void mouseReleased() {
           //print("Candle: " + i + "," + j);
           //println(", lighter : " +lighter +", mouse time(ms): " + time );
           
+          if(lighter<4) fire_on_sound.play();
+          else fire_off_sound.play();
+          
           candle[i][j].change_color(lighter,plus_value);
           
           //if(grid[i][j].change_color(lighter,plus_value))  change_color_nearby(i,j,plus_value);

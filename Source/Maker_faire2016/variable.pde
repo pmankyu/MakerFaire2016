@@ -63,6 +63,13 @@ int B_Value = 0;
 
 int time_cnt = 0;
 
+int candle_id = 0;
+int candle_mode = 0;
+int candle_r = 0;
+int candle_g = 0;
+int candle_b = 0;
+boolean is_candle_data_end = false;
+
 class Candle_data {
   int R_color_now;
   int G_color_now;

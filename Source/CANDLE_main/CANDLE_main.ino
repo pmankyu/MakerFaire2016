@@ -13,6 +13,9 @@ const int led_pin =  13;      // the number of the LED pin
  * 111 : out 7
  */
 
+int serial_data[100] = {0,};
+int serial_data_index = 0;
+
 const int a0_pin =  2;
 const int a1_pin =  3;
 const int a2_pin =  4;
@@ -31,10 +34,25 @@ void select_port(int num);
 String inputString = "";         // a string to hold incoming data
 int stringComplete = 0;  // whether the string is complete
 
-int r_value = 111;
-int g_value = 123;
-int b_value = 255;
+int r_value = 0;
+int g_value = 0;
+int b_value = 0;
 int zero_value = 0;
+
+int candle_id = 0;
+
+int main_id = 0;
+int main_mode = 0;
+int main_r = 0;
+int main_g = 0;
+int main_b = 0;
+bool is_main_data_end = false;
+
+int test_cnt = 0;
+
+int random_id = 0;
+int random_color = 0;
+int random_value = 0;
 
 void setup() {
   // put your setup code here, to run once:
@@ -60,27 +78,139 @@ void setup() {
 }
 
 void loop() {
-  /*
-  select_candle(candle_index);
-  candle_index++;
-  if(candle_index == 33) candle_index = 1;
-  //select_mux(1);select_port(1);
-  
-  Serial.print('r');Serial3.print('r');
-  digitalWrite(led_pin, HIGH);
-  delay(100);
-  Serial.print('g');Serial3.print('g');
-  digitalWrite(led_pin, LOW);
-  delay(100);
-  Serial.print('b');Serial3.print('b');
-  digitalWrite(led_pin, HIGH);
-  delay(100);
-  Serial.print('a');Serial3.print('a');
-  digitalWrite(led_pin, LOW);
-  delay(100);
-  */
 
-  if (stringComplete==1) {
+  if(is_main_data_end)
+  {
+    switch(main_mode)
+    {
+      //in
+      case 1:
+                
+      break;
+
+      //out
+      case 2:
+        if(main_id == 0)
+        {
+          test_cnt++;
+          
+          if(test_cnt == 7)
+          {
+            random_id = random(30);
+            random_color = random(3);
+            random_value = random(50,100);
+          }
+        }
+
+        if(main_id == random_id)
+        {
+          if(test_cnt == 8)
+          {
+            if(random_color == 0)
+            {
+              r_value += random_value;
+            }
+            else if(random_color == 1)
+            {
+              g_value += random_value;
+            }
+            else if(random_color == 2)
+            {
+              b_value += random_value;
+            }
+  
+            if(r_value >= 255) r_value = 0;
+            if(g_value >= 255) g_value = 0;
+            if(b_value >= 255) b_value = 0;
+
+            test_cnt = 0;
+          }
+        }
+
+        Serial.write(0xFA);
+        Serial.write(0x01);//Serial3.print('r');
+        Serial.write(r_value);//Serial3.print(r_value);
+        Serial.write(0x01);//Serial3.print('g');
+        Serial.write(g_value);//Serial3.print(g_value);
+        Serial.write(0x01);//Serial3.print('b');
+        Serial.write(b_value);//Serial3.print(b_value);
+        Serial.write(0x0D);
+
+        r_value = g_value = b_value = 0;
+  
+        is_main_data_end = false;
+      break;
+
+      default:
+      break;
+    }
+  }
+    
+}
+
+void serialEvent() {
+  while (Serial.available()) {
+    int read_data = Serial.read();
+  
+    serial_data[serial_data_index] = read_data;
+    serial_data_index++;
+    
+    serial_process();
+  }
+}
+/*
+ * 0xFA : Start
+ * 0x?? : ID
+ * 0x?? : in(1),out(2)
+ * 0x?? : R color
+ * 0x?? : G color
+ * 0x?? : B color
+ * 0x0D : END
+ */
+
+void serial_process()
+{
+  int R_value;
+  int G_value;
+  int B_value;
+  //시리얼 데이터 버퍼를 스캔
+  for(int i=0;i<serial_data_index;i++)
+  {
+    // 시작 바이트를 발견하면
+    if(serial_data[i] == 0xFA)
+    {
+      //채워져 있는 양이  candle 데이터보다 많으면
+      if((serial_data_index - i) >= 7)
+      {
+        // 마지막 데이터를 확인한다.
+        if(serial_data[i+6]==0x0D)
+        {
+          //맞으면 데이터가 제대로 들어온 것이다.
+          main_id = serial_data[i+1];
+          main_mode = serial_data[i+2];
+          main_r = serial_data[i+3];
+          main_g = serial_data[i+4];
+          main_b = serial_data[i+5];
+          
+          is_main_data_end = true;
+          
+          //println("serial data >> R : " + R_value + ",G : " + G_value +  ",B : " + B_value +  ",i : " + i+  ",index : " + serial_data_index);
+          
+          // index를 초기화 한다.
+          serial_data_index = 0;
+          break;
+        }
+      }
+      else
+      {
+      }
+    }
+  }
+}
+
+
+/*
+ * if (stringComplete==1) {
     //Serial.println(stringComplete);
     // clear the string:
     digitalWrite(led_pin, HIGH);
@@ -110,11 +240,11 @@ void loop() {
     Serial.write(zero_value);//Serial3.print(b_value);
     Serial.write(0x0D);
   }
-}
-
-void serialEvent() {
-  while (Serial.available()) {
-    // get the new byte:
+ * 
+ * 
+ * 
+ * 
+ * // get the new byte:
     char inChar = (char)Serial.read();
     // add it to the inputString:
     inputString += inChar;
@@ -135,8 +265,9 @@ void serialEvent() {
       }
       else inputString = "";
     }
-  }
-}
+ * 
+*/
+
 
 void select_candle(int num)
 {

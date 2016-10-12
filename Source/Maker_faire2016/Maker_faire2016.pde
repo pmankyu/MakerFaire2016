@@ -1,14 +1,21 @@
 import processing.serial.*;
+import processing.sound.*;
 
 Serial candle_port;  // Create object from Serial class
 
+SoundFile fire_on_sound;
+SoundFile fire_off_sound;
 
 void setup() {
   size(1100,600);
   background(0);
   
+  fire_on_sound = new SoundFile(this, "fire_on.wav");
+  fire_off_sound = new SoundFile(this, "fire_off.wav");
+  
+  
   printArray(PFont.list());
-  f = createFont("consola.ttf", 24);
+  f = createFont("consola.ttf", 15);
   textFont(f);
   
   printArray(Serial.list());
@@ -56,29 +63,15 @@ void setup() {
 }
 
 void draw() {
-  int now_time = millis();
-  background(0);
-  fill(255);
-  text(now_time, 100, 20);
+  //int now_time = millis();
+  //background(0);
+  //fill(200);
+  //text(now_time, 50, 20);
   
-  candle_port.write("end-");
-  
-  while(true)
-  {
-    if((millis() - now_time) > 30) break;
-  }
-  
-  candle_port.write("candle-");
-  
-  serial_read();
-  serial_read();
-  serial_read();
-  serial_read();
-  serial_read();
-  serial_read();
-  serial_read();
-  serial_read();
-  println(" ");
+  //while(true)
+  //{
+  //  if((millis() - now_time) > 1) break;
+  //}
   
   // 현재 촛불의 R,G,B 값을 읽고 R,G,B 의 변화값을 받아온다.
   // 시리얼로 값을 읽어오는데 현재값을 읽을 필요는 없을것같음
@@ -93,9 +86,51 @@ void draw() {
       candle_data[i][j].G_color_change = candle[i][j].Get_G_change();
       candle_data[i][j].B_color_change = candle[i][j].Get_B_change();
       
+      
       candle[i][j].display();
+      
+      fill(210);
+      text(candle_data[i][j].R_color_now,candle_X_pos[i][j]-30, candle_Y_pos[i][j]-15);
+      text(candle_data[i][j].G_color_now,candle_X_pos[i][j]-30, candle_Y_pos[i][j]);
+      text(candle_data[i][j].B_color_now,candle_X_pos[i][j]-30, candle_Y_pos[i][j]+15);
     }
   }
+  /*
+  print("start time : " + millis());
+  
+  // 아두이노와 통신을 통해서 데이터를 읽어온다.
+  for (int i = 0; i < rows; i++) {
+    for (int j = 0; j < cols; j++) {
+      candle_id = i*6+j;
+      candle_mode = 2;
+      //is_candle_data_end = true;
+      while(true)
+      {
+        candle_port.write(0xFA);
+        candle_port.write(candle_id);
+        candle_port.write(candle_mode);
+        candle_port.write(0);
+        candle_port.write(1);
+        candle_port.write(2);
+        candle_port.write(0x0D);
+        
+        if(is_candle_data_end==true)  break;
+      }
+      
+      candle_data[i][j].R_color_change = candle_r;
+      candle_data[i][j].G_color_change = candle_g;
+      candle_data[i][j].B_color_change = candle_b;
+      
+      //fill(210);
+      //text(candle_r,candle_X_pos[i][j]+10, candle_Y_pos[i][j]-15);
+      //text(candle_g,candle_X_pos[i][j]+10, candle_Y_pos[i][j]);
+      //text(candle_b,candle_X_pos[i][j]+10, candle_Y_pos[i][j]+15);
+      
+      is_candle_data_end = false;
+    }
+  }
+  println("~ end time : " + millis());
+  */
   
   // 변화값을 기준으로 전체 초의 변화값을 계산한다.
   for (int i = 0; i < rows; i++) {
@@ -163,6 +198,12 @@ void draw() {
         }
         //print_candle_target();
       }
+      
+      fill(210);
+      text(candle_data[i][j].R_color_target,candle_X_pos[i][j]+10, candle_Y_pos[i][j]-15);
+      text(candle_data[i][j].G_color_target,candle_X_pos[i][j]+10, candle_Y_pos[i][j]);
+      text(candle_data[i][j].B_color_target,candle_X_pos[i][j]+10, candle_Y_pos[i][j]+15);
+      
     }
   }
   

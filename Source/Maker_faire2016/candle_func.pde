@@ -17,7 +17,7 @@ int calc_color_value(int target, int now)
 {
   int result = 0;
 
-  result = (target - now)/30;
+  result = (target - now)/10;
 
   if(result == 0)
   {
