@@ -1,22 +1,22 @@
-"C:\Users\pmk\Desktop\## 2016 메이커페어 (CANDLED)\## STM8S 코드\## 3. 마이크 ADC - 완료\Libraries\STM8S_StdPeriph_Driver\src\stm8s_tim1.c"
+"C:\Users\pmk\Documents\GitHub\MakerFaire\MakerFaire2016\Source\Candle\Libraries\STM8S_StdPeriph_Driver\src\stm8s_tim1.c"
 -std=c99
 -ferror-limit=100
 -I
-C:\Users\pmk\Desktop\## 2016 메이커페어 (CANDLED)\## STM8S 코드\## 3. 마이크 ADC - 완료\Project\Discover\inc
+C:\Users\pmk\Documents\GitHub\MakerFaire\MakerFaire2016\Source\Candle\Project\Discover\inc
 -I
-C:\Users\pmk\Desktop\## 2016 메이커페어 (CANDLED)\## STM8S 코드\## 3. 마이크 ADC - 완료\Project\Discover\..\..\Libraries\STM8S_StdPeriph_Driver\inc
+C:\Users\pmk\Documents\GitHub\MakerFaire\MakerFaire2016\Source\Candle\Project\Discover\..\..\Libraries\STM8S_StdPeriph_Driver\inc
 -I
-C:\Users\pmk\Desktop\## 2016 메이커페어 (CANDLED)\## STM8S 코드\## 3. 마이크 ADC - 완료\Project\Discover\..\..\Libraries\STM8_TouchSensing_Driver\inc
+C:\Users\pmk\Documents\GitHub\MakerFaire\MakerFaire2016\Source\Candle\Project\Discover\..\..\Libraries\STM8_TouchSensing_Driver\inc
 -I
 C:\Program Files (x86)\IAR Systems\Embedded Workbench 7.3\stm8\inc
 -I
 C:\Program Files (x86)\IAR Systems\Embedded Workbench 7.3\stm8\inc\c
 -I
-C:\Users\pmk\Desktop\## 2016 메이커페어 (CANDLED)\## STM8S 코드\## 3. 마이크 ADC - 완료\Project\Discover\inc
+C:\Users\pmk\Documents\GitHub\MakerFaire\MakerFaire2016\Source\Candle\Project\Discover\inc
 -I
-C:\Users\pmk\Desktop\## 2016 메이커페어 (CANDLED)\## STM8S 코드\## 3. 마이크 ADC - 완료\Libraries\STM8S_StdPeriph_Driver\inc
+C:\Users\pmk\Documents\GitHub\MakerFaire\MakerFaire2016\Source\Candle\Libraries\STM8S_StdPeriph_Driver\inc
 -I
-C:\Users\pmk\Desktop\## 2016 메이커페어 (CANDLED)\## STM8S 코드\## 3. 마이크 ADC - 완료\Libraries\STM8_TouchSensing_Driver\inc
+C:\Users\pmk\Documents\GitHub\MakerFaire\MakerFaire2016\Source\Candle\Libraries\STM8_TouchSensing_Driver\inc
 -D__CHAR_BITS__=8
 -D__CHAR_MAX__=0xff
 -D__CHAR_MIN__=0

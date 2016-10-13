@@ -609,7 +609,7 @@
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>$TOOLKIT_DIR$\config\lnkstm8s105k4.icf</state>
+          <state>$TOOLKIT_DIR$\config\lnkstm8s005k6.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>
@@ -801,7 +801,25 @@
     <name>$PROJ_DIR$\..\..\Libraries\Debug\Exe\FWLib.a</name>
   </file>
   <file>
+    <name>$PROJ_DIR$\src\global_variable.c</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\src\global_variable.h</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\src\init.c</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\src\init.h</name>
+  </file>
+  <file>
     <name>$PROJ_DIR$\src\main.c</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\src\pwm.c</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\src\pwm.h</name>
   </file>
   <file>
     <name>$PROJ_DIR$\..\..\Libraries\STM8S_StdPeriph_Driver\src\stm8s_adc1.c</name>
@@ -814,6 +832,18 @@
   </file>
   <file>
     <name>$PROJ_DIR$\..\..\Libraries\STM8S_StdPeriph_Driver\src\stm8s_uart2.c</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\src\uart.c</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\src\uart.h</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\src\util.c</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\src\util.h</name>
   </file>
 </project>
 
