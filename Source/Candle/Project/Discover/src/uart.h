@@ -14,5 +14,7 @@
 void Printf(char *message);
 void putchar2(char c);
 char getchar2(void);
+void serial_process();
+void send_serial();
 
 #endif 

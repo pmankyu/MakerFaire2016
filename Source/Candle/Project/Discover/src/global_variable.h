@@ -12,4 +12,17 @@ extern u8 BlinkSpeed;
 extern int NumberOfStart;
 extern int CheckFlag;
 
+extern int main_id;
+extern int main_mode;
+extern int main_r;
+extern int main_g;
+extern int main_b;
+extern bool is_main_data_end;
+
+extern uint8_t candle_data[8];
+
+extern int r_value;
+extern int g_value;
+extern int b_value;
+
 #endif /* __GLOBAL_VARIABLE_H */
