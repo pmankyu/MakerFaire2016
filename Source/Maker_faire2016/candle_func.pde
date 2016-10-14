@@ -1,3 +1,17 @@
+void candle_setup()
+{
+  candle = new Candle[rows][cols];
+  candle_data = new Candle_data[rows][cols];
+  
+  for (int i = 0; i < rows; i++) {
+    for (int j = 0; j < cols; j++) {
+      // Initialize each object
+      candle[i][j] = new Candle(candle_X_pos[i][j],candle_Y_pos[i][j],100,100,0,0,0);
+      candle_data[i][j] = new Candle_data();
+    }
+  }
+}
+
 int calc_distance(int start_x, int start_y, int end_x, int end_y)
 {
   int result = 0;
@@ -13,11 +27,12 @@ int calc_distance(int start_x, int start_y, int end_x, int end_y)
   return result;
 }
 
+// 1 턴마다 변화할 촛불색
 int calc_color_value(int target, int now)
 {
   int result = 0;
 
-  result = (target - now)/10;
+  result = (target - now)/5;
 
   if(result == 0)
   {
@@ -96,3 +111,136 @@ void check_lighter(int x,int y){
     }
   }
 }
+
+
+// update target
+
+void update_R_target(int i, int j, int change_value)
+{
+  int change_result = 0;
+  
+  if(change_value!=0)
+  {
+    for (int ii = 0; ii < rows; ii++) {
+          for (int jj = 0; jj < cols; jj++) {
+        change_result = change_value - ceil(    (change_value * calc_distance(i,j,ii,jj))/6     );
+        //print("(" + change_value+ "), ");
+        //print("(" + calc_distance(i,j,ii,jj)+ "), ");
+        candle_data[ii][jj].R_color_target = candle_data[ii][jj].R_color_now + change_result;
+            
+        if(candle_data[ii][jj].R_color_target > 255) candle_data[ii][jj].R_color_target = 255;
+        else if(candle_data[ii][jj].R_color_target < 0) candle_data[ii][jj].R_color_target = 0;
+      }
+      //println(" ");
+    }
+  }
+}
+
+void update_G_target(int i, int j, int change_value)
+{
+  int change_result = 0;
+  
+  if(change_value!=0)
+  {
+    for (int ii = 0; ii < rows; ii++) {
+          for (int jj = 0; jj < cols; jj++) {
+        change_result = change_value - ceil(    (change_value * calc_distance(i,j,ii,jj))/6     );
+        //print("(" + change_value+ "), ");
+        //print("(" + calc_distance(i,j,ii,jj)+ "), ");
+        candle_data[ii][jj].G_color_target = candle_data[ii][jj].G_color_now + change_result;
+            
+        if(candle_data[ii][jj].G_color_target > 255) candle_data[ii][jj].G_color_target = 255;
+        else if(candle_data[ii][jj].G_color_target < 0) candle_data[ii][jj].G_color_target = 0;
+      }
+      //println(" ");
+    }
+  }
+}
+
+void update_B_target(int i, int j, int change_value)
+{
+  int change_result = 0;
+  
+  if(change_value!=0)
+  {
+    for (int ii = 0; ii < rows; ii++) {
+          for (int jj = 0; jj < cols; jj++) {
+        change_result = change_value - ceil(    (change_value * calc_distance(i,j,ii,jj))/6     );
+        //print("(" + change_value+ "), ");
+        //print("(" + calc_distance(i,j,ii,jj)+ "), ");
+        candle_data[ii][jj].B_color_target = candle_data[ii][jj].B_color_now + change_result;
+            
+        if(candle_data[ii][jj].B_color_target > 255) candle_data[ii][jj].B_color_target = 255;
+        else if(candle_data[ii][jj].B_color_target < 0) candle_data[ii][jj].B_color_target = 0;
+      }
+      //println(" ");
+    }
+  }
+}
+
+
+/*
+      if(candle_data[i][j].R_color_change != 0)
+      {
+        //print_candle_now();
+        //print_candle_change();
+        int change_value = 0;
+        //println("R-----------------------------------------------------------");
+        for (int ii = 0; ii < rows; ii++) {
+          for (int jj = 0; jj < cols; jj++) {
+            change_value = candle_data[i][j].R_color_change - ceil(    (candle_data[i][j].R_color_change * calc_distance(i,j,ii,jj))/6     );
+            //print("(" + change_value+ "), ");
+            //print("(" + calc_distance(i,j,ii,jj)+ "), ");
+            candle_data[ii][jj].R_color_target = candle_data[ii][jj].R_color_now + change_value;
+            
+            if(candle_data[ii][jj].R_color_target > 255) candle_data[ii][jj].R_color_target = 255;
+            else if(candle_data[ii][jj].R_color_target < 0) candle_data[ii][jj].R_color_target = 0;
+          }
+          println(" ");
+        }
+        //print_candle_target();
+      }
+      
+      if(candle_data[i][j].G_color_change != 0)
+      {
+        //print_candle_now();
+        //print_candle_change();
+        int change_value = 0;
+        //println("G-----------------------------------------------------------");
+        for (int ii = 0; ii < rows; ii++) {
+          for (int jj = 0; jj < cols; jj++) {
+            change_value = candle_data[i][j].G_color_change - ceil(    (candle_data[i][j].G_color_change * calc_distance(i,j,ii,jj))/6     );
+            //print("(" + change_value+ "), ");
+            candle_data[ii][jj].G_color_target = candle_data[ii][jj].G_color_now + change_value;
+            
+            if(candle_data[ii][jj].G_color_target > 255) candle_data[ii][jj].G_color_target = 255;
+            else if(candle_data[ii][jj].G_color_target < 0) candle_data[ii][jj].G_color_target = 0;
+          }
+          //println(" ");
+        }
+        //print_candle_target();
+      }
+      
+      if(candle_data[i][j].B_color_change != 0)
+      {
+        //print_candle_now();
+        //print_candle_change();
+        int change_value = 0;
+        //println("B-----------------------------------------------------------");
+        for (int ii = 0; ii < rows; ii++) {
+          for (int jj = 0; jj < cols; jj++) {
+            change_value = candle_data[i][j].B_color_change - ceil(    (candle_data[i][j].B_color_change * calc_distance(i,j,ii,jj))/6     );
+            //print("(" + change_value+ "), ");
+            candle_data[ii][jj].B_color_target = candle_data[ii][jj].B_color_now + change_value;
+            
+            if(candle_data[ii][jj].B_color_target > 255) candle_data[ii][jj].B_color_target = 255;
+            else if(candle_data[ii][jj].B_color_target < 0) candle_data[ii][jj].B_color_target = 0;
+          }
+          //println(" ");
+        }
+        //print_candle_target();
+      }*/
+      
+      
+      
+      

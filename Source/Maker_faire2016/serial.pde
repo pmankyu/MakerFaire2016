@@ -1,6 +1,20 @@
 int serial_data[] = new int[100];
 int serial_data_index = 0;
 
+void serial_setup()
+{
+  println("Serial List");
+  printArray(Serial.list());
+  
+  String portName = Serial.list()[1];
+  candle_port = new Serial(this, portName, 115200);
+  
+  for(int i=0;i<100;i++)
+  {
+    serial_data[i] = 0;
+  }
+}
+
 void serialEvent(Serial candle_port) 
 {
   int read_data = candle_port.read();

@@ -46,12 +46,13 @@ void main(void)
   GPIO_WriteReverse(GPIOC, GPIO_PIN_4);
 
   /*LED OFF*/
-  set_PWM1_4(0); set_PWM1_3(10000); set_PWM1_2(10000);delay_ms(500); 
-  set_PWM1_4(10000); set_PWM1_3(0); set_PWM1_2(10000);delay_ms(500); 
-  set_PWM1_4(10000); set_PWM1_3(10000); set_PWM1_2(0);delay_ms(500); 
-  set_PWM1_2(10000);//BLUE
-  set_PWM1_3(10000);//GREEN
-  set_PWM1_4(10000);//RED
+  set_PWM1_R(0);        set_PWM1_G(10000);      set_PWM1_B(10000);      delay_ms(500); 
+  set_PWM1_R(10000);    set_PWM1_G(0);          set_PWM1_B(10000);      delay_ms(500); 
+  set_PWM1_R(10000);    set_PWM1_G(10000);      set_PWM1_B(0);          delay_ms(500); 
+  
+  set_PWM1_B(10000);//BLUE
+  set_PWM1_G(10000);//GREEN
+  set_PWM1_R(10000);//RED
   
   
    /* LIGHTER Calibration */ 
@@ -95,6 +96,8 @@ void main(void)
     
     /* LIGHTER Calibration */
     
+    
+    
     // R,G,B 값은 10000에서 시작해서 감소할수록 켜지는 것이다.
     // 라이터 입력에 따라 해당 값을 감소시킨다.
     if(IR_Value >750 && IR_Value <940 && R>=1000)
@@ -112,7 +115,7 @@ void main(void)
     }
     else if(IR_Value >400 && IR_Value <750 && G>=5500) 
     {
-      // Green 라이터 입력
+      // Green
       off_flag=0;R_cnt=0;B_cnt=0;
       
       if(G_cnt==4000)
@@ -163,16 +166,16 @@ void main(void)
       if(off_flag==1)
       {
         // 마이크로 OFF 했을때
-        set_PWM1_4(10000); 
-        set_PWM1_3(10000); 
-        set_PWM1_2(10000);
+        set_PWM1_R(10000); 
+        set_PWM1_G(10000); 
+        set_PWM1_B(10000);
       }
       else 
       {
         // 라이터로 색을 바꿨을때
-        set_PWM1_4(R_temp); 
-        set_PWM1_3(G_temp); 
-        set_PWM1_2(B_temp);
+        set_PWM1_R(R_temp); 
+        set_PWM1_G(G_temp); 
+        set_PWM1_B(B_temp);
       }//LED SET
     }
     
@@ -184,6 +187,9 @@ void main(void)
         case 1:
             // main으로부터 초의 색깔 데이터를 입력 받았을때
           
+          set_R_LED(main_r);
+          set_G_LED(main_g);
+          set_B_LED(main_b);
         break;
         
         case 2:
@@ -230,6 +236,11 @@ void main(void)
     
   } // End of while(1)
 }
+
+
+
+
+
 
 /*
 OLD source

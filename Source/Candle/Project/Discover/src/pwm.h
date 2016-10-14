@@ -8,8 +8,12 @@
 
 #include "global_variable.h"
 
-void set_PWM1_2(uint16_t TIM1_Pulse);
-void set_PWM1_3(uint16_t TIM1_Pulse);
-void set_PWM1_4(uint16_t TIM1_Pulse);
+void set_PWM1_R(uint16_t TIM1_Pulse);
+void set_PWM1_G(uint16_t TIM1_Pulse);
+void set_PWM1_B(uint16_t TIM1_Pulse);
+
+void set_R_LED(int value);
+void set_G_LED(int value);
+void set_B_LED(int value);
 
 #endif 

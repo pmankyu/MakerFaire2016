@@ -1,5 +1,8 @@
 import processing.serial.*;
 import processing.sound.*;
+import cc.arduino.*;
+
+Arduino arduino;
 
 Serial candle_port;  // Create object from Serial class
 
@@ -14,30 +17,15 @@ void setup() {
   fire_off_sound = new SoundFile(this, "fire_off.wav");
   
   
-  printArray(PFont.list());
+  
+  //printArray(PFont.list());
   f = createFont("consola.ttf", 15);
   textFont(f);
   
-  printArray(Serial.list());
+  arduino_setup();
+  serial_setup();
+  candle_setup();
   
-  String portName = Serial.list()[1];
-  candle_port = new Serial(this, portName, 115200);
-
-  candle = new Candle[rows][cols];
-  candle_data = new Candle_data[rows][cols];
-  
-  for(int i=0;i<100;i++)
-  {
-    serial_data[i] = 0;
-  }
-  
-  for (int i = 0; i < rows; i++) {
-    for (int j = 0; j < cols; j++) {
-      // Initialize each object
-      candle[i][j] = new Candle(candle_X_pos[i][j],candle_Y_pos[i][j],100,100,0,0,0);
-      candle_data[i][j] = new Candle_data();
-    }
-  }
   
   stroke(255);
   fill(255,0,0);
@@ -58,8 +46,7 @@ void setup() {
   stroke(255);
   fill(0,0,0);
   rect(lighterX,RESET_lighterY,lighterSize,lighterSize/2);
-  
-  
+
 }
 
 void draw() {
@@ -76,6 +63,13 @@ void draw() {
   // 현재 촛불의 R,G,B 값을 읽고 R,G,B 의 변화값을 받아온다.
   // 시리얼로 값을 읽어오는데 현재값을 읽을 필요는 없을것같음
   // 변화값만 읽어오도록 한다.
+  
+  int start_time = 0;
+  int end_time = 0;
+  
+  start_time = millis();
+  //print("start time : " + start_time);
+  
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
       candle_data[i][j].R_color_now = candle[i][j].Get_R_now();
@@ -86,15 +80,62 @@ void draw() {
       candle_data[i][j].G_color_change = candle[i][j].Get_G_change();
       candle_data[i][j].B_color_change = candle[i][j].Get_B_change();
       
-      
       candle[i][j].display();
       
       fill(210);
       text(candle_data[i][j].R_color_now,candle_X_pos[i][j]-30, candle_Y_pos[i][j]-15);
       text(candle_data[i][j].G_color_now,candle_X_pos[i][j]-30, candle_Y_pos[i][j]);
       text(candle_data[i][j].B_color_now,candle_X_pos[i][j]-30, candle_Y_pos[i][j]+15);
+      
+      candle_id = i*6+j;
+      candle_mode = 2;
+      //is_candle_data_end = true;
+      
+      /*
+      while(true)
+      {
+        candle_port.write(0xFA);
+        candle_port.write(candle_id);
+        candle_port.write(candle_mode);
+        candle_port.write(0);
+        candle_port.write(1);
+        candle_port.write(2);
+        candle_port.write(0x0D);
+        
+        if(is_candle_data_end==true)  break;
+      }
+      
+      candle_data[i][j].R_color_change = candle_r;
+      candle_data[i][j].G_color_change = candle_g;
+      candle_data[i][j].B_color_change = candle_b;
+      */
+      
+      //fill(210);
+      //text(candle_r,candle_X_pos[i][j]+10, candle_Y_pos[i][j]-15);
+      //text(candle_g,candle_X_pos[i][j]+10, candle_Y_pos[i][j]);
+      //text(candle_b,candle_X_pos[i][j]+10, candle_Y_pos[i][j]+15);
+      
+      is_candle_data_end = false;
+      
+      // 변화값이 존재하는지 확인
+      update_R_target(i,j,candle_data[i][j].R_color_change);
+      update_G_target(i,j,candle_data[i][j].G_color_change);
+      update_B_target(i,j,candle_data[i][j].B_color_change);
+      
+      fill(210);
+      text(candle_data[i][j].R_color_target,candle_X_pos[i][j]+10, candle_Y_pos[i][j]-15);
+      text(candle_data[i][j].G_color_target,candle_X_pos[i][j]+10, candle_Y_pos[i][j]);
+      text(candle_data[i][j].B_color_target,candle_X_pos[i][j]+10, candle_Y_pos[i][j]+15);
+     
+      candle[i][j].Set_R(candle_data[i][j].R_color_now + calc_color_value(candle_data[i][j].R_color_target,candle_data[i][j].R_color_now));
+      candle[i][j].Set_G(candle_data[i][j].G_color_now + calc_color_value(candle_data[i][j].G_color_target,candle_data[i][j].G_color_now));
+      candle[i][j].Set_B(candle_data[i][j].B_color_now + calc_color_value(candle_data[i][j].B_color_target,candle_data[i][j].B_color_now));
     }
   }
+  
+  end_time = millis();
+  //println("~ end time : " + end_time + ", interval time : " + (end_time - start_time));
+  
   /*
   print("start time : " + millis());
   
@@ -131,7 +172,22 @@ void draw() {
   }
   println("~ end time : " + millis());
   */
+
   
+  
+  //print_candle_change();
+  //print_candle_now();
+  //print_candle_target(); //<>//
+}
+
+
+
+  
+  
+  
+  
+  
+  /*
   // 변화값을 기준으로 전체 초의 변화값을 계산한다.
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
@@ -204,19 +260,15 @@ void draw() {
       text(candle_data[i][j].G_color_target,candle_X_pos[i][j]+10, candle_Y_pos[i][j]);
       text(candle_data[i][j].B_color_target,candle_X_pos[i][j]+10, candle_Y_pos[i][j]+15);
       
+      
     }
   }
   
   // 계산된 변화값과 현재값의 차이만큼 초의 값을 세팅한다.
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
-      candle[i][j].Set_R(candle_data[i][j].R_color_now + calc_color_value(candle_data[i][j].R_color_target,candle_data[i][j].R_color_now));
-      candle[i][j].Set_G(candle_data[i][j].G_color_now + calc_color_value(candle_data[i][j].G_color_target,candle_data[i][j].G_color_now));
-      candle[i][j].Set_B(candle_data[i][j].B_color_now + calc_color_value(candle_data[i][j].B_color_target,candle_data[i][j].B_color_now));
+      //candle[i][j].Set_R(candle_data[i][j].R_color_now + calc_color_value(candle_data[i][j].R_color_target,candle_data[i][j].R_color_now));
+      //candle[i][j].Set_G(candle_data[i][j].G_color_now + calc_color_value(candle_data[i][j].G_color_target,candle_data[i][j].G_color_now));
+      //candle[i][j].Set_B(candle_data[i][j].B_color_now + calc_color_value(candle_data[i][j].B_color_target,candle_data[i][j].B_color_now));
     }
-  }
-  
-  //print_candle_change();
-  //print_candle_now();
-  //print_candle_target(); //<>//
-}
+  }*/
