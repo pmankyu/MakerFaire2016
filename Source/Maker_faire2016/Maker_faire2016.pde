@@ -22,7 +22,7 @@ void setup() {
   f = createFont("consola.ttf", 15);
   textFont(f);
   
-  arduino_setup();
+  //arduino_setup();
   serial_setup();
   candle_setup();
   
@@ -46,7 +46,8 @@ void setup() {
   stroke(255);
   fill(0,0,0);
   rect(lighterX,RESET_lighterY,lighterSize,lighterSize/2);
-
+  
+  println("GUI END");
 }
 
 void draw() {
@@ -72,6 +73,8 @@ void draw() {
   
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
+      
+      
       candle_data[i][j].R_color_now = candle[i][j].Get_R_now();
       candle_data[i][j].G_color_now = candle[i][j].Get_G_now();
       candle_data[i][j].B_color_now = candle[i][j].Get_B_now();
@@ -82,40 +85,53 @@ void draw() {
       
       candle[i][j].display();
       
-      fill(210);
-      text(candle_data[i][j].R_color_now,candle_X_pos[i][j]-30, candle_Y_pos[i][j]-15);
-      text(candle_data[i][j].G_color_now,candle_X_pos[i][j]-30, candle_Y_pos[i][j]);
-      text(candle_data[i][j].B_color_now,candle_X_pos[i][j]-30, candle_Y_pos[i][j]+15);
-      
       candle_id = i*6+j;
       candle_mode = 2;
       //is_candle_data_end = true;
       
-      /*
-      while(true)
+      fill(210);
+      text(candle_id,candle_X_pos[i][j]-5, candle_Y_pos[i][j]-30);
+      text(candle_data[i][j].R_color_now,candle_X_pos[i][j]-30, candle_Y_pos[i][j]-15);
+      text(candle_data[i][j].G_color_now,candle_X_pos[i][j]-30, candle_Y_pos[i][j]);
+      text(candle_data[i][j].B_color_now,candle_X_pos[i][j]-30, candle_Y_pos[i][j]+15);
+      
+      if(candle_id == 0)
       {
-        candle_port.write(0xFA);
-        candle_port.write(candle_id);
-        candle_port.write(candle_mode);
-        candle_port.write(0);
-        candle_port.write(1);
-        candle_port.write(2);
-        candle_port.write(0x0D);
+        while(true)
+        {
+          candle_port.write(0xFA);
+          candle_port.write(0x00);
+          candle_port.write(0x01);
+          candle_port.write(candle_data[i][j].R_color_now + calc_color_value(candle_data[i][j].R_color_target,candle_data[i][j].R_color_now));
+          candle_port.write(candle_data[i][j].G_color_now + calc_color_value(candle_data[i][j].G_color_target,candle_data[i][j].G_color_now));
+          candle_port.write(candle_data[i][j].B_color_now + calc_color_value(candle_data[i][j].B_color_target,candle_data[i][j].B_color_now));
+          candle_port.write(0x0D);
+          
+          if(is_candle_data_end==true)
+          {
+            is_candle_data_end = false;
+            break;
+          }
+        }
         
-        if(is_candle_data_end==true)  break;
+        if(candle_mic > candle_off[candle_id])
+        {
+          candle_data[i][j].R_color_change = -1 * candle_data[i][j].R_color_now;
+          candle_data[i][j].G_color_change = -1 * candle_data[i][j].G_color_now;
+          candle_data[i][j].B_color_change = -1 * candle_data[i][j].B_color_now;
+        }
+        else
+        {
+          if(candle_data[i][j].R_color_change == 0) candle_data[i][j].R_color_change = candle_r;
+          if(candle_data[i][j].G_color_change == 0) candle_data[i][j].G_color_change = candle_g;
+          if(candle_data[i][j].B_color_change == 0) candle_data[i][j].B_color_change = candle_b;
+        }
+        
+        //fill(210);
+        //text(candle_r,candle_X_pos[i][j]+10, candle_Y_pos[i][j]-15);
+        //text(candle_g,candle_X_pos[i][j]+10, candle_Y_pos[i][j]);
+        //text(candle_b,candle_X_pos[i][j]+10, candle_Y_pos[i][j]+15);
       }
-      
-      candle_data[i][j].R_color_change = candle_r;
-      candle_data[i][j].G_color_change = candle_g;
-      candle_data[i][j].B_color_change = candle_b;
-      */
-      
-      //fill(210);
-      //text(candle_r,candle_X_pos[i][j]+10, candle_Y_pos[i][j]-15);
-      //text(candle_g,candle_X_pos[i][j]+10, candle_Y_pos[i][j]);
-      //text(candle_b,candle_X_pos[i][j]+10, candle_Y_pos[i][j]+15);
-      
-      is_candle_data_end = false;
       
       // 변화값이 존재하는지 확인
       update_R_target(i,j,candle_data[i][j].R_color_change);
@@ -130,6 +146,8 @@ void draw() {
       candle[i][j].Set_R(candle_data[i][j].R_color_now + calc_color_value(candle_data[i][j].R_color_target,candle_data[i][j].R_color_now));
       candle[i][j].Set_G(candle_data[i][j].G_color_now + calc_color_value(candle_data[i][j].G_color_target,candle_data[i][j].G_color_now));
       candle[i][j].Set_B(candle_data[i][j].B_color_now + calc_color_value(candle_data[i][j].B_color_target,candle_data[i][j].B_color_now));
+      
+      
     }
   }
   

@@ -58,7 +58,7 @@ void serial_process()
 void send_serial()
 {
   int i=0;
-  for(i=0;i<8;i++)
+  for(i=0;i<6;i++)
   {
     putchar2(candle_data[i]);
   }
@@ -73,6 +73,16 @@ void Printf(char *message)
         while ((UART2->SR & (u8) UART2_FLAG_TXE) == RESET);
         ch++;
     }
+}
+
+void print_value(int value)
+{
+  putchar2((value/1000)%10 + 48);
+  putchar2((value/100)%10 + 48);
+  putchar2((value/10)%10 + 48);
+  putchar2(value%10 + 48);
+  putchar2('\r');
+  putchar2('\n');
 }
 
 PUTCHAR_PROTOTYPE

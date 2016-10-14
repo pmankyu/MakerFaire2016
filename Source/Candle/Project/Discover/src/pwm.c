@@ -25,7 +25,8 @@ void set_R_LED(int value)
   
   int led_value = 0;
   
-  led_value = 10000 - ((value*10000) / 255);
+  //led_value = 10000 - ((value*10000) / 255);
+  led_value = 10000 - (value*39);
   set_PWM1_R(led_value);
 }
 
@@ -33,7 +34,7 @@ void set_G_LED(int value)
 {
   int led_value = 0;
   
-  led_value = 10000 - ((value*10000) / 255);
+  led_value = 10000 - (value*39);
   
   set_PWM1_G(led_value); 
 }
@@ -42,7 +43,7 @@ void set_B_LED(int value)
 {
   int led_value = 0;
   
-  led_value = 10000 - ((value*10000) / 255);
+  led_value = 10000 - (value*39);
   
   set_PWM1_B(led_value);
 }

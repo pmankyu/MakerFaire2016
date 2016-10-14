@@ -45,6 +45,8 @@ int[][] candle_Y_pos = {  {300,225,150,75,375,300},
                           {225,150,75,525,450,375},
                           {300,225,150,525,450,375},
                           {300,225,525,450,375,300} };
+                          
+                          
 
 int MAX_R_Value = 0;
 int MAX_R_i=0;
@@ -63,8 +65,11 @@ int B_Value = 0;
 
 int time_cnt = 0;
 
+int[] candle_off = {100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100};
+
 int candle_id = 0;
 int candle_mode = 0;
+int candle_mic = 0;
 int candle_r = 0;
 int candle_g = 0;
 int candle_b = 0;
@@ -165,6 +170,12 @@ class Candle {
       break;
       
       case 4:
+        R_color_change = -1 * R_color_now;
+        G_color_change = -1 * G_color_now;
+        B_color_change = -1 * B_color_now;
+      break;
+      
+      case 5:
         R_color_change = -1 * R_color_now;
         G_color_change = -1 * G_color_now;
         B_color_change = -1 * B_color_now;

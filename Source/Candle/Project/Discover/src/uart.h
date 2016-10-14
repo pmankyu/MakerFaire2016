@@ -16,5 +16,6 @@ void putchar2(char c);
 char getchar2(void);
 void serial_process();
 void send_serial();
+void print_value(int value);
 
 #endif 

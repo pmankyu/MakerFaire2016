@@ -10,6 +10,8 @@ void candle_setup()
       candle_data[i][j] = new Candle_data();
     }
   }
+  
+  println("Serial Setup END");
 }
 
 int calc_distance(int start_x, int start_y, int end_x, int end_y)
@@ -87,30 +89,7 @@ int calc_color(int near_color, int color_value)
   return result;
 }
 
-void check_lighter(int x,int y){
-  if( (lighterX < x) && ((lighterX + lighterSize) > x)) {
-    if( (R_lighterY < y) && ((R_lighterY + lighterSize/2) > y)) {
-      println("RED");
-      lighter = 1;
-    }
-    else if( (G_lighterY < y) && ((G_lighterY + lighterSize/2) > y)) {
-      println("GREEN");
-      lighter = 2;
-    }
-    else if( (B_lighterY < y) && ((B_lighterY + lighterSize/2) > y)) {
-      println("BLUE");
-      lighter = 3;
-    }
-    else if( (OFF_lighterY < y) && ((OFF_lighterY + lighterSize/2) > y)) {
-      println("OFF");
-      lighter = 4;
-    }
-    else if( (RESET_lighterY < y) && ((RESET_lighterY + lighterSize/2) > y)) {
-      println("CHANGE");
-      lighter = 5;
-    }
-  }
-}
+
 
 
 // update target

@@ -50,7 +50,7 @@ void mouseReleased() {
   int x = mouseX;
   int y = mouseY;
   int time = millis() - mouse_time;
-  int plus_value = 50;//time/10;
+  int plus_value = 30;//time/10;
   
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
@@ -69,6 +69,27 @@ void mouseReleased() {
           //if(grid[i][j].change_color(lighter,plus_value))  change_color_nearby(i,j,plus_value);
         }
       }
+    }
+  }
+}
+
+void check_lighter(int x,int y){
+  if( (lighterX < x) && ((lighterX + lighterSize) > x)) {
+    if( (R_lighterY < y) && ((R_lighterY + lighterSize/2) > y)) {
+      println("RED");
+      lighter = 1;
+    }
+    else if( (G_lighterY < y) && ((G_lighterY + lighterSize/2) > y)) {
+      println("GREEN");
+      lighter = 2;
+    }
+    else if( (B_lighterY < y) && ((B_lighterY + lighterSize/2) > y)) {
+      println("BLUE");
+      lighter = 3;
+    }
+    else if( (OFF_lighterY < y) && ((OFF_lighterY + lighterSize/2) > y)) {
+      println("OFF");
+      lighter = 4;
     }
   }
 }

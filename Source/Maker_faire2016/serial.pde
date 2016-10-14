@@ -6,13 +6,15 @@ void serial_setup()
   println("Serial List");
   printArray(Serial.list());
   
-  String portName = Serial.list()[1];
+  String portName = Serial.list()[2];
   candle_port = new Serial(this, portName, 115200);
   
   for(int i=0;i<100;i++)
   {
     serial_data[i] = 0;
   }
+  
+  println("Serial Setup END");
 }
 
 void serialEvent(Serial candle_port) 
@@ -34,12 +36,13 @@ void serial_process()
     if(serial_data[i] == 0xFA)
     {
       //채워져 있는 양이  candle 데이터보다 많으면
-      if((serial_data_index - i) >= 8)
+      if((serial_data_index - i) >= 6)
       {
         // 마지막 데이터를 확인한다.
-        if(serial_data[i+7]==0x0D)
+        if(serial_data[i+5]==0x0D)
         {
           //맞으면 데이터가 제대로 들어온 것이다.
+          /*
           if(serial_data[i+1]==2) candle_r = -1 * serial_data[i+2];
           else candle_r = serial_data[i+2];
           
@@ -48,8 +51,14 @@ void serial_process()
           
           if(serial_data[i+5]==2) candle_b = -1 * serial_data[i+6];
           else candle_b = serial_data[i+6];
+          */
           
-          //println("serial data >> R : " + candle_r + ",G : " + candle_g +  ",B : " + candle_b +  ",i : " + i+  ",index : " + serial_data_index);
+          candle_mic = serial_data[i+1];
+          candle_r = serial_data[i+2];
+          candle_g = serial_data[i+3];
+          candle_b = serial_data[i+4];
+          
+          println("serial data >> R : " + candle_r + ",G : " + candle_g +  ",B : " + candle_b +  ",MIC : " + candle_mic+  ",index : " + serial_data_index);
           
           is_candle_data_end = true;
           
